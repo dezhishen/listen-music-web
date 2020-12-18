@@ -109,7 +109,7 @@ export default {
     },
     handlePlaySong: function (source, id) {
       getUrl(source, id).then(res => {
-        window.open(res.data.url, '_blank')
+        window.open(res.data, '_blank')
       })
     }
 

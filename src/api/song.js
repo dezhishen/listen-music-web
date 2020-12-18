@@ -4,5 +4,5 @@ export function searchSong (params) {
 }
 
 export function getUrl (source, id) {
-  return axios.get('/song/getBySourceAndId', {params: {source, id}})
+  return axios.get('/song/getUrlBySourceAndId', {params: {source, id}})
 }
