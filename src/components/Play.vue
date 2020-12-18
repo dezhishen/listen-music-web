@@ -7,7 +7,7 @@
             <span>歌单列表</span>
           </div>
           <div v-for="o in playList" :key="o.id" class="text item">
-            {{o.name}}
+            <el-button type="text" @click="loadPlayListSong(o.id)">{{o.name}}</el-button>
           </div>
         </el-card>
       </el-aside>
@@ -61,6 +61,10 @@ export default {
     loadPlayList: function () {
       list().then(res => {
         this.playList = res.data
+      }).then(() => {
+        if (this.playList && this.playList.length >= 1) {
+          this.loadPlayListSong(this.playList[0].id)
+        }
       })
     },
     loadPlayListSong: function (id) {
