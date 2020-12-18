@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :visible="showSearchMusic">
+    <el-dialog :visible.sync="showSearchMusic">
       <div>
         <el-form inline size="medium">
           <el-form-item label="关键字">
@@ -51,7 +51,7 @@
       </el-pagination>
       </div>
     </el-dialog>
-    <el-dialog :visible="showPlayList">
+    <el-dialog ::visible.sync="showPlayList">
       <el-form inline>
         <el-form-item label="名称">
           <el-input v-model="editPlayList.name"></el-input>
@@ -92,6 +92,7 @@
             >
               <template slot-scope="scope">
                 <el-button type="text" @click="handlePlaySong(scope.row.source,scope.row.id)">播放</el-button>
+                <el-button type="text" @click="handleDeletePlaySong(scope.row.source,scope.row.id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -104,7 +105,7 @@
   </div>
 </template>
 <script>
-import {create, list, listSong, addSong} from '@/api/playlist'
+import {create, list, listSong, addSong, deleteSong} from '@/api/playlist'
 import {searchSong, getUrl} from '@/api/song'
 import {listSource} from '@/api/source'
 export default {
@@ -115,6 +116,7 @@ export default {
       showPlayList: false,
       showSearchMusic: false,
       sources: [],
+      currentPlayListId: null,
       querySong: {
         playListId: null,
         q: null,
@@ -161,9 +163,14 @@ export default {
         setTimeout(() => { this.resultSong.loading = false }, 500)
       })
     },
+    handleDeletePlaySong: function (source, id) {
+      deleteSong(this.currentPlayListId, source, id).then(resp => {
+        this.loadPlayListSong(this.currentPlayListId)
+      })
+    },
     handleAddSong2PlayList: function (source, id) {
       addSong(source, id, this.querySong.playListId).then(res => {
-        this.loadPlayListSong(this.querySong.playListId)
+        this.loadPlayListSong(this.currentPlayListId)
       })
     },
     handleQuerySources: function () {
@@ -198,6 +205,7 @@ export default {
       })
     },
     loadPlayListSong: function (id) {
+      this.currentPlayListId = id
       listSong(id).then(res => {
         this.songs = res.data
       })
