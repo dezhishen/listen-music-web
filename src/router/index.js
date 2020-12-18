@@ -10,6 +10,11 @@ export default new Router({
       path: '/',
       name: 'HelloWorld',
       component: HelloWorld
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: resolve => (require(['@/components/search'], resolve))
     }
   ]
 })
