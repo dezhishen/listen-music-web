@@ -51,7 +51,7 @@
       </el-pagination>
       </div>
     </el-dialog>
-    <el-dialog ::visible.sync="showPlayList">
+    <el-dialog :visible.sync="showPlayList">
       <el-form inline>
         <el-form-item label="名称">
           <el-input v-model="editPlayList.name"></el-input>
@@ -63,17 +63,17 @@
     </el-dialog>
     <el-container>
       <el-container>
-        <el-aside width="200px">
-          <el-card>
-            <el-button type="text" @click="handleAddPlayList()">新增</el-button>
+        <el-aside width="300px">
+          <el-card style="margin: 5px;">
+            <el-button type="text" @click="handleOpenEditPlayListDialog">新增歌单</el-button>
           </el-card>
-          <el-card :key="o.id"  v-for="o in playList" class="box-card">
+          <el-card style="margin: 5px;" :key="o.id"  v-for="o in playList" class="box-card">
             <div slot="header" class="clearfix">
-              <span>歌单列表</span>
+              <span>{{o.name}}</span>
             </div>
-            <span>{{o.name}}</span>
-            <el-button type="text" @click="loadPlayListSong(o.id)">播放</el-button>
-            <el-button type="text" @click="handleAddSong(o)">添加歌曲</el-button>
+            <el-button type="text" @click="loadPlayListSong(o.id)">播放当前歌单</el-button>
+            <el-button type="text" @click="handleOpenSearchDialog(o)">添加歌曲</el-button>
+            <el-button type="text" @click="handleDeletePlayList(o.id)">删除歌单</el-button>
           </el-card>
         </el-aside>
         <el-main>
@@ -92,7 +92,7 @@
             >
               <template slot-scope="scope">
                 <el-button type="text" @click="handlePlaySong(scope.row.source,scope.row.id)">播放</el-button>
-                <el-button type="text" @click="handleDeletePlaySong(scope.row.source,scope.row.id)">删除</el-button>
+                <el-button type="text" @click="handleDeleteSong(scope.row.source,scope.row.id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -105,7 +105,7 @@
   </div>
 </template>
 <script>
-import {create, list, listSong, addSong, deleteSong} from '@/api/playlist'
+import {create, deletePlayList, list, listSong, addSong, deleteSong} from '@/api/playlist'
 import {searchSong, getUrl} from '@/api/song'
 import {listSource} from '@/api/source'
 export default {
@@ -136,7 +136,7 @@ export default {
     }
   },
   methods: {
-    handleAddPlayList: function () {
+    handleOpenEditPlayListDialog: function () {
       this.editPlayList = {}
       this.showPlayList = true
     },
@@ -145,7 +145,7 @@ export default {
         this.playList.push(res.data)
       })
     },
-    handleAddSong: function (o) {
+    handleOpenSearchDialog: function (o) {
       this.handleQuerySources()
       this.querySong.playListId = o.id
       this.showSearchMusic = true
@@ -163,14 +163,20 @@ export default {
         setTimeout(() => { this.resultSong.loading = false }, 500)
       })
     },
-    handleDeletePlaySong: function (source, id) {
+    handleDeleteSong: function (source, id) {
       deleteSong(this.currentPlayListId, source, id).then(resp => {
         this.loadPlayListSong(this.currentPlayListId)
       })
     },
+    handleDeletePlayList: function (id) {
+      deletePlayList(id).then(res => {
+        let newList = this.playList.filter(e => e.id !== id)
+        this.playList = newList
+      })
+    },
     handleAddSong2PlayList: function (source, id) {
       addSong(source, id, this.querySong.playListId).then(res => {
-        this.loadPlayListSong(this.currentPlayListId)
+        if (this.querySong.playListId === this.currentPlayListId) { this.loadPlayListSong(this.currentPlayListId) }
       })
     },
     handleQuerySources: function () {

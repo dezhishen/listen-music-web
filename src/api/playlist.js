@@ -6,6 +6,9 @@ export function create (params) {
     data: params
   })
 }
+export function deletePlayList (id) {
+  return axios.delete(`/play-list/delete?id=${id}`)
+}
 export function list () {
   return axios.get(`/play-list/list`)
 }
