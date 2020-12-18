@@ -191,12 +191,12 @@ export default {
       }
       )
     },
-    showArtistsName: function (list) {
-      if (!list) {
+    showArtistsName: function (arr) {
+      if (!arr) {
         return ''
       }
       let result = ''
-      list.forEach(element => {
+      arr.forEach(element => {
         result += ('-' + element.name)
       })
       return result.substring(1)
