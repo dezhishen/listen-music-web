@@ -17,3 +17,11 @@ export function get (id) {
 export function listSong (playListId) {
   return axios.get(`/play-list/song/listAll`, {params: {playListId}})
 }
+
+export function addSong (source, id, playListId) {
+  return axios({
+    url: '/play-list/song/add',
+    method: 'post',
+    data: {source, id, playListId}
+  })
+}
