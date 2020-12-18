@@ -73,7 +73,7 @@
             </div>
             <el-button type="text" @click="loadPlayListSong(o.id)">播放当前歌单</el-button>
             <el-button type="text" @click="handleOpenSearchDialog(o)">添加歌曲</el-button>
-            <el-button type="text" @click="handleDeletePlayList(o.id)">删除歌单</el-button>
+            <el-button type="text" style="color:#EF2E55" @click="handleDeletePlayList(o.id)">删除歌单</el-button>
           </el-card>
         </el-aside>
         <el-main>
@@ -92,7 +92,7 @@
             >
               <template slot-scope="scope">
                 <el-button type="text" @click="handlePlaySong(scope.row.source,scope.row.id)">播放</el-button>
-                <el-button type="text" @click="handleDeleteSong(scope.row.source,scope.row.id)">删除</el-button>
+                <el-button type="text" style="color:#EF2E55" @click="handleDeleteSong(scope.row.source,scope.row.id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
