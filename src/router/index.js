@@ -14,7 +14,12 @@ export default new Router({
     {
       path: '/search',
       name: 'search',
-      component: resolve => (require(['@/components/search'], resolve))
+      component: resolve => (require(['@/components/Search'], resolve))
+    },
+    {
+      path: '/play',
+      name: 'play',
+      component: resolve => (require(['@/components/Play'], resolve))
     }
   ]
 })

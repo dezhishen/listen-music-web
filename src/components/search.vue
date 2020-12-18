@@ -78,9 +78,9 @@ export default {
       }
       let result = ''
       list.forEach(element => {
-        result += element.name
+        result += ('-' + element.name)
       })
-      return result
+      return result.substring(1)
     },
     handleQuerySong: function () {
       this.querySong.pageNum = 1
