@@ -82,11 +82,12 @@ export default {
       })
       return result
     },
-    doQuerySong: function () {
-      this.querySong.pageNum = 1
-      this.handleQuerySong()
-    },
     handleQuerySong: function () {
+      this.querySong.pageNum = 1
+      console.log(this.querySong)
+      this.doQuerySong()
+    },
+    doQuerySong: function () {
       this.resultSong.loading = true
       searchSong(this.querySong).then(res => {
         this.resultSong = res.data
