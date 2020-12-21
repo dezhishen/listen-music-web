@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height:100%">
     <el-dialog :visible.sync="showSearchMusic">
       <div>
         <el-form inline size="medium">
@@ -61,8 +61,8 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-container>
-      <el-container>
+    <el-container style="height:100%">
+      <el-container style="height:85%">
         <el-aside width="300px">
           <el-card style="margin: 5px;">
             <el-button type="text" @click="handleOpenEditPlayListDialog">新增歌单</el-button>
