@@ -46,6 +46,7 @@
   :current-page="resultSong.pageNum"
   :total="resultSong.total">
 </el-pagination>
+<audio src="..." ref="testAudio" controls></audio>
 </div>
 </template>
 <script>
@@ -109,7 +110,9 @@ export default {
     },
     handlePlaySong: function (source, id) {
       getUrl(source, id).then(res => {
-        window.open(res.data, '_blank')
+      //  window.open(res.data, '_blank')
+        this.$refs.testAudio.src = res.data
+        this.$refs.testAudio.play()
       })
     }
 
