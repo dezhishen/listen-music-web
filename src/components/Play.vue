@@ -99,7 +99,8 @@
         </el-main>
       </el-container>
       <el-footer style="height:60;">
-        播放器
+        <!-- 播放器 -->
+        <audio src="..." ref="playListAudio" controls></audio>
       </el-footer>
     </el-container>
   </div>
@@ -218,7 +219,9 @@ export default {
     },
     handlePlaySong: function (source, id) {
       getUrl(source, id).then(res => {
-        window.open(res.data, '_blank')
+        // window.open(res.data, '_blank')
+        this.$refs.playListAudio.src = res.data
+        this.$refs.playListAudio.play()
       })
     }
   },
