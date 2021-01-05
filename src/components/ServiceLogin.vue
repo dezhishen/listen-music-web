@@ -34,10 +34,10 @@
   </el-dialog>
 </template>
 <script>
-import { listSource } from "@/api/source";
-import { loginByPhone } from "@/api/service-login";
+import { listSource } from '@/api/source'
+import { loginByPhone } from '@/api/service-login'
 export default {
-  name: "service-login-dialog",
+  name: 'service-login-dialog',
   data: function () {
     return {
       show: false,
@@ -45,16 +45,16 @@ export default {
       login: {
         source: null,
         phone: null,
-        password: null,
-      },
-    };
+        password: null
+      }
+    }
   },
   methods: {
     showDialog: function () {
       if (this.sources.length === 0) {
-        this.handleQuerySources();
+        this.handleQuerySources()
       }
-      this.show = true;
+      this.show = true
     },
     loginServiceByPhone: function () {
       loginByPhone(
@@ -62,23 +62,23 @@ export default {
         this.login.phone,
         this.login.password
       ).then((res) => {
-        this.show = false;
-        this.$message("登录成功");
-      });
+        this.show = false
+        this.$message('登录成功')
+      })
     },
     handleQuerySources: function () {
       listSource()
         .then((res) => {
-          this.sources = res.data;
+          this.sources = res.data
         })
         .then(() => {
           this.sources.forEach((e) => {
             if (!this.querySong.source && e.enabled) {
-              this.querySong.source = e.id;
+              this.querySong.source = e.id
             }
-          });
-        });
-    },
-  },
-};
+          })
+        })
+    }
+  }
+}
 </script>

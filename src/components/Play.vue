@@ -30,7 +30,7 @@
           <el-table-column prop="name" label="歌曲名"> </el-table-column>
           <el-table-column label="歌手">
             <template slot-scope="scope">
-              {{ showArtistsName(scope.row.artists) }}
+              {{ getArtistsName(scope.row.artists) }}
             </template>
           </el-table-column>
           <el-table-column label="是否免费">
@@ -90,6 +90,8 @@
       <el-header>
         <service-login ref="serviceLogin"></service-login>
         <el-button
+        type="primary"
+         style="float:right;"
           @click="
             () => {
               this.$refs.serviceLogin.showDialog();
@@ -129,35 +131,9 @@
           </el-card>
         </el-aside>
         <el-main>
-          <el-table height="100%" :data="songs">
-            <el-table-column prop="name" label="歌曲名"> </el-table-column>
-            <el-table-column label="歌手">
-              <template slot-scope="scope">
-                {{ showArtistsName(scope.row.artists) }}
-              </template>
-            </el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button
-                  type="text"
-                  @click="handlePlaySong(scope.row.source, scope.row.id)"
-                  >播放</el-button
-                >
-                <el-button
-                  type="text"
-                  style="color: #ef2e55"
-                  @click="handleDeleteSong(scope.row.source, scope.row.id)"
-                  >删除</el-button
-                >
-              </template>
-            </el-table-column>
-          </el-table>
+          <my-audio ref="myAduio"></my-audio>
         </el-main>
       </el-container>
-      <el-footer style="height: 60">
-        <!-- 播放器 -->
-        <audio src="..." ref="playListAudio" controls></audio>
-      </el-footer>
     </el-container>
   </div>
 </template>
@@ -168,139 +144,174 @@ import {
   list,
   listSong,
   addSong,
-  deleteSong,
-} from "@/api/playlist";
-import { searchSong, getUrl } from "@/api/song";
-import { listSource } from "@/api/source";
-import ServiceLogin from "@/components/ServiceLogin";
+  deleteSong
+} from '@/api/playlist'
+import { searchSong, getSongBySourceAndId } from '@/api/song'
+import { listSource } from '@/api/source'
+import ServiceLogin from '@/components/ServiceLogin'
+import MyAudio from '@/components/Audio'
 export default {
-  name: "play",
-  components: { ServiceLogin },
+  name: 'play',
+  components: { ServiceLogin, MyAudio },
   data: function () {
     return {
+      preload: 'none',
       editPlayList: {},
       showPlayList: false,
       showSearchMusic: false,
       sources: [],
       currentPlayListId: null,
+      music: {
+        title: null,
+        pic: null,
+        lrc: null,
+        source: null,
+        id: null,
+        src: null
+      },
+      songs: [],
       querySong: {
         playListId: null,
         q: null,
         source: null,
         pageNum: 1,
-        pageSize: 5,
+        pageSize: 5
       },
       resultSong: {
         loading: false,
         list: [],
         pageNum: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
       },
-      playList: [],
-      songs: [],
-    };
+      playList: []
+    }
+  },
+  watch: {
   },
   methods: {
     handleOpenEditPlayListDialog: function () {
-      this.editPlayList = {};
-      this.showPlayList = true;
+      this.editPlayList = {}
+      this.showPlayList = true
     },
     handleSavePlayList: function () {
       create(this.editPlayList).then((res) => {
-        this.playList.push(res.data);
-      });
+        this.playList.push(res.data)
+      })
     },
     handleOpenSearchDialog: function (o) {
-      this.handleQuerySources();
-      this.querySong.playListId = o.id;
-      this.showSearchMusic = true;
+      this.handleQuerySources()
+      this.querySong.playListId = o.id
+      this.showSearchMusic = true
     },
     handleQuerySong: function () {
-      this.querySong.pageNum = 1;
-      console.log(this.querySong);
-      this.doQuerySong();
+      this.querySong.pageNum = 1
+      console.log(this.querySong)
+      this.doQuerySong()
     },
     doQuerySong: function () {
-      this.resultSong.loading = true;
+      this.resultSong.loading = true
       searchSong(this.querySong)
         .then((res) => {
-          this.resultSong = res.data;
+          this.resultSong = res.data
         })
         .finally(() => {
           setTimeout(() => {
-            this.resultSong.loading = false;
-          }, 500);
-        });
+            this.resultSong.loading = false
+          }, 500)
+        })
     },
     handleDeleteSong: function (source, id) {
       deleteSong(this.currentPlayListId, source, id).then((resp) => {
-        this.loadPlayListSong(this.currentPlayListId);
-      });
+        this.loadPlayListSong(this.currentPlayListId)
+      })
     },
     handleDeletePlayList: function (id) {
       deletePlayList(id).then((res) => {
-        let newList = this.playList.filter((e) => e.id !== id);
-        this.playList = newList;
-      });
+        let newList = this.playList.filter((e) => e.id !== id)
+        this.playList = newList
+      })
     },
     handleAddSong2PlayList: function (source, id) {
       addSong(source, id, this.querySong.playListId).then((res) => {
         if (this.querySong.playListId === this.currentPlayListId) {
-          this.loadPlayListSong(this.currentPlayListId);
+          getSongBySourceAndId(source, id).then((res) => {
+            let song = this.song2aplayMusic(res.data)
+            this.songs.push(song)
+            this.$refs.myAduio.addSong(song)
+          })
         }
-      });
+      })
     },
     handleQuerySources: function () {
       listSource()
         .then((res) => {
-          this.sources = res.data;
+          this.sources = res.data
         })
         .then(() => {
           this.sources.forEach((e) => {
             if (!this.querySong.source && e.enabled) {
-              this.querySong.source = e.id;
+              this.querySong.source = e.id
             }
-          });
-        });
+          })
+        })
     },
-    showArtistsName: function (arr) {
-      if (!arr) {
-        return "";
-      }
-      let result = "";
-      arr.forEach((element) => {
-        result += "-" + element.name;
-      });
-      return result.substring(1);
-    },
+
     loadPlayList: function () {
       list()
         .then((res) => {
-          this.playList = res.data;
+          this.playList = res.data
         })
         .then(() => {
           if (this.playList && this.playList.length >= 1) {
-            this.loadPlayListSong(this.playList[0].id);
+            this.loadPlayListSong(this.playList[0].id)
           }
-        });
+        })
     },
     loadPlayListSong: function (id) {
-      this.currentPlayListId = id;
+      this.currentPlayListId = id
       listSong(id).then((res) => {
-        this.songs = res.data;
-      });
+        if (res.data) {
+          let songs = []
+          res.data.forEach((e) => {
+            songs.push(this.song2aplayMusic(e))
+          })
+          this.$refs.myAduio.setSong(songs)
+        }
+      })
     },
     handlePlaySong: function (source, id) {
-      getUrl(source, id).then((res) => {
-        // window.open(res.data, '_blank')
-        this.$refs.playListAudio.src = res.data;
-        this.$refs.playListAudio.play();
-      });
+      getSongBySourceAndId(source, id).then((res) => {
+        this.music = this.song2aplayMusic(res.data)
+      })
     },
+    getArtistsName: function (arr) {
+      if (!arr) {
+        return ''
+      }
+      let result = ''
+      arr.forEach((element) => {
+        result += '-' + element.name
+      })
+      return result.substring(1)
+    },
+    song2aplayMusic: function (e) {
+      return {
+        name: e.name,
+        title: e.name,
+        cover: e.cover,
+        lrc: e.lyric,
+        source: e.source,
+        id: e.id,
+        url: e.url,
+        src: e.url,
+        artist: this.getArtistsName(e.artists),
+        type: 'custom'
+      }
+    }
   },
-  mounted() {
-    this.loadPlayList();
-  },
-};
+  mounted () {
+    this.loadPlayList()
+  }
+}
 </script>

@@ -6,3 +6,6 @@ export function searchSong (params) {
 export function getUrl (source, id) {
   return axios.get('/song/getUrlBySourceAndId', {params: {source, id}})
 }
+export function getSongBySourceAndId (source, id) {
+  return axios.get(`/song/getBySourceAndId?source=${source}&id=${id}`)
+}

@@ -16,9 +16,9 @@ export default new Router({
       component: resolve => (require(['@/components/Search'], resolve))
     },
     {
-      path: '/play',
-      name: 'play',
-      component: resolve => (require(['@/components/Play'], resolve))
+      path: '/audio',
+      name: 'audio',
+      component: resolve => (require(['@/components/Audio'], resolve))
     }
   ]
 })
