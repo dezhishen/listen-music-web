@@ -60,13 +60,13 @@
           @size-change="
             (size) => {
               querySong.pageSize = size;
-              handleQuerySong();
+              doQuerySong();
             }
           "
           @current-change="
             (num) => {
               querySong.pageNum = num;
-              handleQuerySong();
+              doQuerySong();
             }
           "
           :page-size="resultSong.pageSize"
@@ -197,6 +197,7 @@ export default {
     handleSavePlayList: function () {
       create(this.editPlayList).then((res) => {
         this.playList.push(res.data)
+        this.showPlayList = false
       })
     },
     handleOpenSearchDialog: function (o) {
@@ -206,7 +207,6 @@ export default {
     },
     handleQuerySong: function () {
       this.querySong.pageNum = 1
-      console.log(this.querySong)
       this.doQuerySong()
     },
     doQuerySong: function () {

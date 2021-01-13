@@ -40,10 +40,10 @@ export default {
       this.ap = new APlayer({
         container: document.getElementById('audio'),
         lrcType: 1,
-        audio: [
-        ],
+        audio: [],
         customAudioType: {
           custom: async (audioElement, audio, player) => {
+            audioElement.pause()
             let res = await this.getSongUrl(audio)
             let url = res.data
             audioElement.src = url
