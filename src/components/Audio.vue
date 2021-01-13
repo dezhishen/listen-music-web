@@ -29,8 +29,10 @@ export default {
     setSong: function (song) {
       this.ap.list.clear()
       this.ap.list.add(song)
+      console.log(song)
     },
-    getSongUrl: function ({ source, id }) {
+    getSongUrl: function ({ source, id, url }) {
+      if (url) return {data: url}
       return getUrl(source, id)
     },
     initAp: function () {
@@ -40,14 +42,15 @@ export default {
       this.ap = new APlayer({
         container: document.getElementById('audio'),
         lrcType: 1,
+        preload: 'none',
         audio: [],
         customAudioType: {
           custom: async (audioElement, audio, player) => {
-            audioElement.pause()
+            if (!audioElement.paused) audioElement.pause()
             let res = await this.getSongUrl(audio)
             let url = res.data
             audioElement.src = url
-            audioElement.play()
+            if (audioElement.paused) { audioElement.play() }
           }
         }
       })

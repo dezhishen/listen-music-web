@@ -146,7 +146,7 @@ import {
   addSong,
   deleteSong
 } from '@/api/playlist'
-import { searchSong, getSongBySourceAndId } from '@/api/song'
+import { searchSong, getSongBySourceAndId, getUrl } from '@/api/song'
 import { listSource } from '@/api/source'
 import ServiceLogin from '@/components/ServiceLogin'
 import MyAudio from '@/components/Audio'
@@ -276,7 +276,10 @@ export default {
           res.data.forEach((e) => {
             songs.push(this.song2aplayMusic(e))
           })
-          this.$refs.myAduio.setSong(songs)
+          getUrl(songs[0].source, songs[0].id).then(urlRes => {
+            songs[0].url = urlRes.data
+            this.$refs.myAduio.setSong(songs)
+          })
         }
       })
     },
