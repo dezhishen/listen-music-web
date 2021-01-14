@@ -22,7 +22,6 @@
           </el-form-item>
         </el-form>
         <el-table
-          height="500px"
           v-loading="resultSong.loading"
           stripe
           :data="resultSong.list"

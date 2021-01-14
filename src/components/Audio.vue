@@ -31,7 +31,14 @@ export default {
       this.ap.list.add(song)
       console.log(song)
     },
+    getUrlStorageKey: function ({source, id}) {
+      return `_song_url_${source}_${id}`
+    },
     getSongUrl: function ({ source, id, url }) {
+      let result = localStorage.getItem(this.getUrlStorageKey({source, id}))
+      if (result) {
+        return {data: result}
+      }
       if (url) return {data: url}
       return getUrl(source, id)
     },
@@ -39,6 +46,7 @@ export default {
       if (this.ap) {
         return
       }
+      const that = this
       this.ap = new APlayer({
         container: document.getElementById('audio'),
         lrcType: 1,
@@ -49,6 +57,7 @@ export default {
             if (!audioElement.paused) audioElement.pause()
             let res = await this.getSongUrl(audio)
             let url = res.data
+            if (url) { localStorage.setItem(that.getUrlStorageKey(audio), url) }
             audioElement.src = url
             if (audioElement.paused) { audioElement.play() }
           }
