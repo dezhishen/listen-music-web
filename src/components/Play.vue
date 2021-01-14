@@ -308,7 +308,7 @@ export default {
         id: e.id,
         url: e.url,
         src: e.url,
-        artist: this.getArtistsName(e.artists),
+        artist: e.artistsName || this.getArtistsName(e.artists),
         type: 'custom'
       }
     }
