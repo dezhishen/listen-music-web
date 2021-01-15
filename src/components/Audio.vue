@@ -9,16 +9,7 @@ export default {
   name: 'my-audio',
   data () {
     return {
-      ap: null,
-      list: [
-        {
-          name: '人生浪费指南',
-          url: 'tesst',
-          source: 'NeteaseCloud',
-          id: '497572729'
-        }
-      ],
-      playing: {}
+      ap: null
     }
   },
   props: {},

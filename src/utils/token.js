@@ -18,4 +18,8 @@ const refreshToken = function () {
   return true
 }
 
-export {getToken, setToken, refreshToken}
+const clearToken = function () {
+  localStorage.removeItem(tokenKey)
+}
+
+export {getToken, setToken, refreshToken, clearToken}

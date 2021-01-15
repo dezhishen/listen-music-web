@@ -53,7 +53,6 @@
           </el-table-column>
         </el-table>
         <el-pagination
-          v-loading="resultSong.loading"
           background
           layout="prev, pager, next"
           @size-change="
@@ -158,7 +157,6 @@ export default {
         id: null,
         src: null
       },
-      songs: [],
       querySong: {
         playListId: null,
         q: null,
@@ -229,8 +227,11 @@ export default {
         if (this.querySong.playListId === this.currentPlayListId) {
           getSongBySourceAndId(source, id).then((res) => {
             let song = this.song2aplayMusic(res.data)
-            this.songs.push(song)
             this.$refs.myAduio.addSong(song)
+            this.$notify({
+              title: '添加成功',
+              message: song.artist + '-' + song.name
+            })
           })
         }
       })
@@ -263,7 +264,7 @@ export default {
     loadPlayListSong: function (id) {
       this.currentPlayListId = id
       listSong(id).then((res) => {
-        if (res.data) {
+        if (res.data && res.data.length > 0) {
           let songs = []
           res.data.forEach((e) => {
             songs.push(this.song2aplayMusic(e))

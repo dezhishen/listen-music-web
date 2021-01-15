@@ -12,3 +12,10 @@ export function login ({loginName, password}) {
     method: 'post'
   })
 }
+
+export function loginOut () {
+  return axios({
+    url: '/system/account/loginOut',
+    method: 'delete'
+  })
+}
