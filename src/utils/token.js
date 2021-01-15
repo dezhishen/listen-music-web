@@ -7,7 +7,7 @@ const getToken = function () {
 }
 
 const setToken = function ({token, userId, refreshToken, expire}) {
-  expire = new Date().getTime + expire * 1000
+  expire = new Date().getTime() + expire * 1000
   localStorage.setItem(tokenKey, JSON.stringify({token, userId, refreshToken, expire}))
 }
 const refreshToken = function () {
