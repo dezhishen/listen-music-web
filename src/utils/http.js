@@ -1,7 +1,7 @@
 import axios from 'axios'
 import router from '@/router'
 import {Message} from 'element-ui'
-
+import {getToken} from './token'
 axios.defaults.baseURL = '/api'
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'
 axios.interceptors.request.use(
@@ -9,7 +9,8 @@ axios.interceptors.request.use(
     // 每次发送请求之前判断vuex中是否存在token
     // 如果存在，则统一在http请求的header都加上token，这样后台根据token判断你的登录情况
     // 即使本地存在token，也有可能token是过期的，所以在响应拦截器中要对返回状态进行判断
-    config.headers['biscuit'] = '_test_'
+    let storage = getToken() || {}
+    config.headers['token'] = storage.token
     return config
   },
   error => {
@@ -46,7 +47,7 @@ axios.interceptors.response.use(
           })
           break
         default:
-          Message.error(error.response.data.message)
+          Message.error(error.response.message)
       }
       return Promise.reject(error.response)
     }
