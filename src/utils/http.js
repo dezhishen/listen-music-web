@@ -1,5 +1,4 @@
 import axios from 'axios'
-import router from '@/router'
 import {Message} from 'element-ui'
 import {getToken} from './token'
 axios.defaults.baseURL = '/api'
@@ -39,12 +38,7 @@ axios.interceptors.response.use(
         // 未登录则跳转登录页面，并携带当前页面的路径
         // 在登录成功后返回当前页面，这一步需要在登录页操作。
         case 401: case 403:
-          router.replace({
-            path: '/login',
-            query: {
-              redirect: router.currentRoute.fullPath
-            }
-          })
+          window.dispatchEvent(new Event('token_error'))
           break
         default:
           Message.error(error.response.message)
