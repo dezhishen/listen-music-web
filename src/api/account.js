@@ -13,9 +13,9 @@ export function login ({loginName, password}) {
   })
 }
 
-export function loginOut () {
+export function logout () {
   return axios({
-    url: '/system/account/loginOut',
+    url: '/system/account/logout',
     method: 'delete'
   })
 }

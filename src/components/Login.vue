@@ -64,7 +64,7 @@
 </template>
 <script>
 import { setToken, clearToken } from '@/utils/token'
-import { login, register, loginOut } from '@/api/account'
+import { login, register, logout } from '@/api/account'
 import { current } from '@/api/user'
 export default {
   data: function () {
@@ -82,7 +82,7 @@ export default {
   methods: {
     handleLoginOut: function () {
       const that = this
-      loginOut().then(res => {
+      logout().then(res => {
         if (res.data) {
           clearToken()
           that.checkLogin()
