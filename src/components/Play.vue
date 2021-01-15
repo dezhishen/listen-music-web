@@ -4,7 +4,7 @@
       <div>
         <el-form inline size="medium">
           <el-form-item label="关键字">
-            <el-input v-model="querySong.q" clearable></el-input>
+            <el-input v-model="querySong.q" @keyup.enter.native="handleQuerySong" clearable></el-input>
           </el-form-item>
           <el-form-item label="来源">
             <el-radio-group v-model="querySong.source">
@@ -18,7 +18,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item>
-            <el-button @click="handleQuerySong">搜索</el-button>
+            <el-button @click="handleQuerySong" type="primary">搜索</el-button>
           </el-form-item>
         </el-form>
         <el-table
@@ -77,7 +77,7 @@
     <el-dialog :visible.sync="showPlayList">
       <el-form inline>
         <el-form-item label="名称">
-          <el-input v-model="editPlayList.name"></el-input>
+          <el-input @keyup.enter.native="handleSavePlayList" v-model="editPlayList.name"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSavePlayList">确定</el-button>
