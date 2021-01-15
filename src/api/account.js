@@ -1,7 +1,7 @@
 import axios from '@/utils/http.js'
 export function register (params) {
   return axios({
-    url: '/system/account/regsiter',
+    url: '/system/account/register',
     method: 'post',
     data: params
   })
