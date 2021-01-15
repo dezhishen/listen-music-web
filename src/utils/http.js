@@ -10,6 +10,7 @@ axios.interceptors.request.use(
     // 即使本地存在token，也有可能token是过期的，所以在响应拦截器中要对返回状态进行判断
     let storage = getToken() || {}
     config.headers['token'] = storage.token
+    config.retry = 3
     return config
   },
   error => {
@@ -38,7 +39,9 @@ axios.interceptors.response.use(
         // 未登录则跳转登录页面，并携带当前页面的路径
         // 在登录成功后返回当前页面，这一步需要在登录页操作。
         case 401: case 403:
-          window.dispatchEvent(new Event('token_error'))
+          let event = document.createEvent('HTMLEvents')
+          event.initEvent('token_error')
+          window.dispatchEvent(event)
           break
         default:
           Message.error(error.response.message)

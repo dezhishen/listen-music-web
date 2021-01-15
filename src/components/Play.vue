@@ -87,17 +87,7 @@
     </el-dialog>
     <el-container style="height: 100%">
       <el-header>
-        <service-login ref="serviceLogin"></service-login>
-        <el-button
-        type="primary"
-         style="float:right;"
-          @click="
-            () => {
-              this.$refs.serviceLogin.showDialog();
-            }
-          "
-          >登录到服务</el-button
-        >
+        <login style="float:right" @success="loginSuccess"></login>
       </el-header>
       <el-container style="height: 85%">
         <el-aside width="300px">
@@ -147,11 +137,11 @@ import {
 } from '@/api/playlist'
 import { searchSong, getSongBySourceAndId, getUrl } from '@/api/song'
 import { listSource } from '@/api/source'
-import ServiceLogin from '@/components/ServiceLogin'
 import MyAudio from '@/components/Audio'
+import Login from '@/components/Login'
 export default {
   name: 'play',
-  components: { ServiceLogin, MyAudio },
+  components: { MyAudio, Login },
   data: function () {
     return {
       preload: 'none',
@@ -189,6 +179,9 @@ export default {
   watch: {
   },
   methods: {
+    loginSuccess: function () {
+      this.loadPlayList()
+    },
     handleOpenEditPlayListDialog: function () {
       this.editPlayList = {}
       this.showPlayList = true
