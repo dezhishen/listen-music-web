@@ -154,13 +154,15 @@ export default {
         mutationsList.forEach(function (item, index) {
           if (item.type === 'childList') {
             const childrenNodes = item.addedNodes
+            console.log(childrenNodes)
             childrenNodes.forEach((e) => {
               if (e.tagName === 'LI') {
+                let btns = e.getElementsByClassName('el-button el-button--text is-circle')
+                if (btns && btns.length > 0) {
+                  return
+                }
                 let span = document.createElement('span')
                 let btn = document.createElement('button')
-                // <button data-v-46127d64="" type="button" class="el-button el-button--text is-circle"><!----><i class="el-icon-delete"></i><!----></button>
-                // btn.setAttribute('type', 'button')
-                // btn.setAttribute('data-v-46127d64', '')
                 btn.setAttribute('class', 'el-button el-button--text is-circle')
                 btn.setAttribute('style', 'float:right;z-index:-1;color:rgb(239, 46, 85);')
                 let icon = document.createElement('i')
