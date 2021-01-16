@@ -24,7 +24,7 @@
         <ul class="infinite-list" v-infinite-scroll="handleQuerySongScroll" style="overflow:auto">
           <li :key="index" v-for="(item,index) in resultSong.list" class="infinite-list-item">
             <el-row style="padding:5px;width: 100%;">
-              <el-col :span='23'>
+              <el-col :span='22'>
                 <el-row>
                   <span style="font-weight: bold;float: left;font-size: 14px">{{item.name}}</span>
                 </el-row>
@@ -32,12 +32,12 @@
                   <span style="float: left;font-size: 8px">{{ getArtistsName(item.artists) }}</span>
                 </el-row>
               </el-col>
-              <el-col :span='1'>
+              <el-col :span='2'>
                 <el-button
                   circle
                   type="text"
                   icon="el-icon-plus"
-                  style="font-size:20px;float:right"
+                  style="float:right"
                   @click="handleAddSong2PlayList(item.source, item.id)">
                 </el-button>
               </el-col>
