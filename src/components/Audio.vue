@@ -33,7 +33,7 @@ export default {
       return getUrl(source, id)
     },
     setUrlLocalStorage: function ({source, id, url}) {
-      let time = (new Date().getTime() / (60 * 60 * 1000)).toFixed(0)
+      let time = (new Date().getTime() / (30 * 60 * 1000)).toFixed(0)
       let key = localStorage.getItem(`_song_url_key_${source}_${id}`)
       let newKey = `_song_url_${time}_${source}_${id}`
       localStorage.setItem(newKey, url)
