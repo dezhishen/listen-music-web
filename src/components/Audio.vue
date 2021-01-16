@@ -65,19 +65,39 @@ export default {
         audio: [],
         customAudioType: {
           custom: async (audioElement, audio, player) => {
-            if (!audioElement.paused) audioElement.pause()
+            if (!audioElement.paused) that.ap.pause()
             let res = await this.getSongUrl(audio)
             let url = res.data
             if (url) { that.setUrlLocalStorage({id: audio.id, source: audio.source, url}) }
             audioElement.src = url
-            if (audioElement.paused) { audioElement.play() }
+            if (audioElement.paused) { that.ap.play() }
           }
         }
       })
+    },
+    initKey: function () {
+      document.onkeydown = (e) => {
+        let keyCode = e.keyCode
+        if (keyCode === 0xB0) {
+          // 下一首
+          this.ap.skipForward()
+          return
+        }
+        if (keyCode === 0xB1) {
+          // 上一首
+          this.ap.skipBack()
+          return
+        }
+        if (keyCode === 0xB3) {
+          // 播放/暂停
+          this.ap.toggle()
+        }
+      }
     }
   },
   mounted: function () {
     this.initAp()
+    this.initKey()
   }
 }
 </script>
