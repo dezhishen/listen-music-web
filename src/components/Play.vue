@@ -1,8 +1,8 @@
 <template>
-  <div style="height: 100%">
-    <el-dialog :visible.sync="showSearchMusic">
+  <div>
+    <el-dialog width="100%" style="padding:5px" :visible.sync="showSearchMusic">
       <div>
-        <el-form inline size="medium">
+        <el-form inline size="mini">
           <el-form-item label="关键字">
             <el-input v-model="querySong.q" @keyup.enter.native="handleQuerySong" clearable></el-input>
           </el-form-item>
@@ -21,60 +21,32 @@
             <el-button @click="handleQuerySong" type="primary">搜索</el-button>
           </el-form-item>
         </el-form>
-        <el-table
-          v-loading="resultSong.loading"
-          stripe
-          :data="resultSong.list"
-        >
-          <el-table-column prop="name" label="歌曲名"> </el-table-column>
-          <el-table-column label="歌手">
-            <template slot-scope="scope">
-              {{ getArtistsName(scope.row.artists) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="是否免费">
-            <template slot-scope="scope">
-              {{ scope.row.free ? "Y" : "N" }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作">
-            <template slot-scope="scope">
-              <el-button
-                type="text"
-                @click="handlePlaySong(scope.row.source, scope.row.id)"
-                >播放</el-button
-              >
-              <el-button
-                type="text"
-                @click="handleAddSong2PlayList(scope.row.source, scope.row.id)"
-                >添加</el-button
-              >
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          @size-change="
-            (size) => {
-              querySong.pageSize = size;
-              doQuerySong();
-            }
-          "
-          @current-change="
-            (num) => {
-              querySong.pageNum = num;
-              doQuerySong();
-            }
-          "
-          :page-size="resultSong.pageSize"
-          :current-page="resultSong.pageNum"
-          :total="resultSong.total"
-        >
-        </el-pagination>
+        <ul class="infinite-list" v-infinite-scroll="handleQuerySongScroll" style="overflow:auto">
+          <li :key="index" v-for="(item,index) in resultSong.list" class="infinite-list-item">
+            <el-row style="padding:5px;width: 100%;">
+              <el-col :span='23'>
+                <el-row>
+                  <span style="font-weight: bold;float: left;font-size: 14px">{{item.name}}</span>
+                </el-row>
+                <el-row>
+                  <span style="float: left;font-size: 8px">{{ getArtistsName(item.artists) }}</span>
+                </el-row>
+              </el-col>
+              <el-col :span='1'>
+                <el-button
+                  circle
+                  type="text"
+                  icon="el-icon-plus"
+                  style="font-size:20px;float:right"
+                  @click="handleAddSong2PlayList(item.source, item.id)">
+                </el-button>
+              </el-col>
+            </el-row>
+          </li>
+        </ul>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="showPlayList">
+    <el-dialog title="新增歌单" :visible.sync="showPlayList">
       <el-form size="mini">
         <el-form-item label="名称">
           <el-input @keyup.enter.native="handleSavePlayList" v-model="editPlayList.name"></el-input>
@@ -267,16 +239,30 @@ export default {
       this.querySong.pageNum = 1
       this.doQuerySong()
     },
+    handleQuerySongScroll: function () {
+      this.querySong.pageNum++
+      this.doQuerySongScroll()
+    },
+    doQuerySongScroll: function () {
+      if (!this.querySong.q) { return }
+      this.resultSong.loading = true
+      searchSong(this.querySong)
+        .then((res) => {
+          if (res.data) { this.resultSong.list.push(...res.data.list) }
+        })
+        .finally(() => {
+          this.resultSong.loading = false
+        })
+    },
     doQuerySong: function () {
+      if (!this.querySong.q) { return }
       this.resultSong.loading = true
       searchSong(this.querySong)
         .then((res) => {
           this.resultSong = res.data
         })
         .finally(() => {
-          setTimeout(() => {
-            this.resultSong.loading = false
-          }, 500)
+          this.resultSong.loading = false
         })
     },
     handleDeleteSong: function (source, id) {
@@ -370,3 +356,16 @@ export default {
   }
 }
 </script>
+<style scoped>
+.infinite-list .infinite-list-item {
+  padding: 2px;
+  margin-top: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+.infinite-list {
+  height: 400px;
+  padding: 5px;
+  list-style: none;
+}
+</style>
