@@ -88,7 +88,7 @@ export default {
       })
     },
     removeSong: function (e) {
-      let index = e.parentNode.childNodes[3].innerHTML
+      let index = e.parentNode.parentNode.childNodes[3].innerHTML
       let audio = this.ap.list.audios[index - 1]
       this.ap.list.remove(index - 1)
       this.handleRemoveSong(audio)
@@ -170,7 +170,7 @@ export default {
                   that.removeSong(span)
                 }
                 span.appendChild(btn)
-                e.appendChild(span)
+                e.childNodes[7].appendChild(span)
               }
             })
           }
@@ -190,8 +190,14 @@ export default {
   }
 }
 </script>
-<style scoped>
-span.aplayer-list-index {
-  float: left;
+<style>
+.aplayer .aplayer-list ol li .aplayer-list-index {
+    cursor: pointer;
+    float: left;
+}
+.aplayer .aplayer-list ol li .aplayer-list-title {
+    cursor: pointer;
+    margin-left: 10px;
+    float: left;
 }
 </style>
