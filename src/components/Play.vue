@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog width="100%" style="padding:5px" :visible.sync="showSearchMusic">
+    <el-dialog style="padding:5px;" width="100%" :visible.sync="showSearchMusic">
       <div>
         <el-form inline size="mini">
           <el-form-item label="关键字">
@@ -347,7 +347,8 @@ export default {
         url: e.url,
         src: e.url,
         artist: e.artistsName || this.getArtistsName(e.artists),
-        type: 'custom'
+        type: 'custom',
+        playlistId: this.currentPlayListId
       }
     }
   },

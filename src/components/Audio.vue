@@ -5,6 +5,7 @@
 import 'APlayer/dist/APlayer.min.css'
 import APlayer from 'APlayer'
 import { getUrl } from '@/api/song'
+import { deleteSong } from '@/api/playlist'
 export default {
   name: 'my-audio',
   data () {
@@ -21,18 +22,19 @@ export default {
       this.ap.list.clear()
       this.ap.list.add(song)
     },
-    getUrlStorageKey: function ({source, id}) {
-
+    handleRemoveSong: function ({playlistId, source, id}) {
+      deleteSong(playlistId, source, id)
     },
+    getUrlStorageKey: function ({ source, id }) {},
     getSongUrl: function ({ source, id, url }) {
       let result = this.getUrlLocalStorage({ source, id })
       if (result) {
-        return {data: result}
+        return { data: result }
       }
-      if (url) return {data: url}
+      if (url) return { data: url }
       return getUrl(source, id)
     },
-    setUrlLocalStorage: function ({source, id, url}) {
+    setUrlLocalStorage: function ({ source, id, url }) {
       let time = (new Date().getTime() / (30 * 60 * 1000)).toFixed(0)
       let key = localStorage.getItem(`_song_url_key_${source}_${id}`)
       let newKey = `_song_url_${time}_${source}_${id}`
@@ -42,9 +44,11 @@ export default {
         localStorage.removeItem(key)
       }
     },
-    getUrlLocalStorage: function ({source, id}) {
+    getUrlLocalStorage: function ({ source, id }) {
       let key = localStorage.getItem(`_song_url_key_${source}_${id}`)
-      if (!key) { return }
+      if (!key) {
+        return
+      }
       let time = (new Date().getTime() / (30 * 60 * 60 * 1000)).toFixed(0)
       let newKey = `_song_url_${time}_${source}_${id}`
       if (newKey === key) {
@@ -68,12 +72,26 @@ export default {
             if (!audioElement.paused) that.ap.pause()
             let res = await this.getSongUrl(audio)
             let url = res.data
-            if (url) { that.setUrlLocalStorage({id: audio.id, source: audio.source, url}) }
+            if (url) {
+              that.setUrlLocalStorage({
+                id: audio.id,
+                source: audio.source,
+                url
+              })
+            }
             audioElement.src = url
-            if (audioElement.paused) { that.ap.play() }
+            if (audioElement.paused) {
+              that.ap.play()
+            }
           }
         }
       })
+    },
+    removeSong: function (e) {
+      let index = e.parentNode.childNodes[3].innerHTML
+      let audio = this.ap.list.audios[index - 1]
+      this.ap.list.remove(index - 1)
+      this.handleRemoveSong(audio)
     },
     initKey: function () {
       const that = this
@@ -100,27 +118,80 @@ export default {
             that.ap.volume(that.ap.audio.volume - 0.1)
           }
         } else {
-          if (keyCode === 0xB0) {
-          // 下一首
+          if (keyCode === 0xb0) {
+            // 下一首
             that.ap.skipForward()
             return
           }
-          if (keyCode === 0xB1) {
-          // 上一首
+          if (keyCode === 0xb1) {
+            // 上一首
             that.ap.skipBack()
             return
           }
-          if (keyCode === 0xB3) {
-          // 播放/暂停
+          if (keyCode === 0xb3) {
+            // 播放/暂停
             that.ap.toggle()
           }
         }
       }
+    },
+    initEvent: function () {
+      // 选择需要观察变动的节点
+      const targetNode = document.getElementById('audio')
+      if (!targetNode) {
+        return
+      }
+      const aplayerList = targetNode.getElementsByClassName('aplayer-list')
+      if (!aplayerList) {
+        return
+      }
+      const ols = aplayerList[0].getElementsByTagName('ol')
+      if (!ols) {
+        return
+      }
+      const that = this
+      let callback = function (mutationsList, instance) {
+        mutationsList.forEach(function (item, index) {
+          if (item.type === 'childList') {
+            const childrenNodes = item.addedNodes
+            childrenNodes.forEach((e) => {
+              if (e.tagName === 'LI') {
+                let span = document.createElement('span')
+                let btn = document.createElement('button')
+                // <button data-v-46127d64="" type="button" class="el-button el-button--text is-circle"><!----><i class="el-icon-delete"></i><!----></button>
+                // btn.setAttribute('type', 'button')
+                // btn.setAttribute('data-v-46127d64', '')
+                btn.setAttribute('class', 'el-button el-button--text is-circle')
+                btn.setAttribute('style', 'float:right;z-index:-1;color:rgb(239, 46, 85);')
+                let icon = document.createElement('i')
+                icon.setAttribute('class', 'el-icon-delete')
+                btn.appendChild(icon)
+                btn.onclick = function () {
+                  that.removeSong(span)
+                }
+                span.appendChild(btn)
+                e.appendChild(span)
+              }
+            })
+          }
+        })
+      }
+      // 观察器的配置（需要观察什么变动）
+      const config = { attributes: false, childList: true, subtree: false }
+      // 当观察到变动时执行的回调函数
+      let observer = new MutationObserver(callback)
+      observer.observe(ols[0], config)
     }
   },
   mounted: function () {
     this.initAp()
     this.initKey()
+    this.initEvent()
   }
 }
 </script>
+<style scoped>
+span.aplayer-list-index {
+  float: left;
+}
+</style>
