@@ -75,7 +75,7 @@
       </div>
     </el-dialog>
     <el-dialog :visible.sync="showPlayList">
-      <el-form inline>
+      <el-form size="mini">
         <el-form-item label="名称">
           <el-input @keyup.enter.native="handleSavePlayList" v-model="editPlayList.name"></el-input>
         </el-form-item>
@@ -85,7 +85,7 @@
       </el-form>
     </el-dialog>
     <el-dialog title="导入歌曲" :visible.sync="importSongVisible">
-      <el-form inline size="medium">
+      <el-form inline size="mini">
         <el-form-item label="来源">
           <el-radio-group v-model="importSong.source">
             <el-radio-button
@@ -105,50 +105,46 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-container style="height: 100%">
-      <el-header>
-        <login style="float:right" @success="loginSuccess"></login>
-      </el-header>
-      <el-container style="height: 85%">
-        <el-aside width="300px">
-          <el-card style="margin: 5px">
-            <el-button type="text" @click="handleOpenEditPlayListDialog"
+    <el-row>
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+           <el-button size="mini" type="text" @click="handleOpenEditPlayListDialog"
               >新增歌单</el-button
             >
-          </el-card>
-          <el-card
+          <login style="float:right" @success="loginSuccess"></login>
+        </div>
+        <div :key="o.id"
+          v-for="(o,index) in playList">
+          <el-divider direction="vertical" v-if="index!==0"></el-divider>
+          <div
             style="margin: 5px"
-            :key="o.id"
-            v-for="o in playList"
-            class="box-card"
           >
-            <div slot="header" class="clearfix">
-              <span>{{ o.name }}</span>
-            </div>
-            <el-form size="small">
-              <el-button type="text" @click="loadPlayListSong(o.id)"
+            <el-row>
+              <span>{{o.name}}</span>
+            </el-row>
+            <el-row>
+              <el-button size="mini" type="text" @click="loadPlayListSong(o.id)"
                 >播放当前歌单</el-button
               >
-              <el-button type="text" @click="handleOpenSearchDialog(o)"
+              <el-button size="mini" type="text" @click="handleOpenSearchDialog(o)"
                 >添加歌曲</el-button
               >
-              <el-button type="text" @click="handleOpenImportSongs(o)">
+              <el-button size="mini" type="text" @click="handleOpenImportSongs(o)">
                 导入歌单
               </el-button>
               <el-button
                 type="text"
+                size="mini"
                 style="color: #ef2e55"
                 @click="handleDeletePlayList(o.id)"
                 >删除歌单</el-button
               >
-            </el-form>
-          </el-card>
-        </el-aside>
-        <el-main>
-          <my-audio ref="myAduio"></my-audio>
-        </el-main>
-      </el-container>
-    </el-container>
+            </el-row>
+          </div>
+        </div>
+      </el-card>
+    </el-row>
+    <my-audio ref="myAduio"></my-audio>
   </div>
 </template>
 <script>
