@@ -76,21 +76,44 @@ export default {
       })
     },
     initKey: function () {
+      const that = this
       document.onkeydown = (e) => {
         let keyCode = e.keyCode
-        if (keyCode === 0xB0) {
+        if (e.ctrlKey && e.altKey) {
+          if (keyCode === 0x27) {
+            that.ap.skipForward()
+            return
+          }
+          if (keyCode === 0x25) {
+            that.ap.skipBack()
+            return
+          }
+          if (keyCode === 0x74) {
+            that.ap.toggle()
+            return
+          }
+          if (keyCode === 0x26) {
+            that.ap.volume(that.ap.audio.volume + 0.1)
+            return
+          }
+          if (keyCode === 0x28) {
+            that.ap.volume(that.ap.audio.volume - 0.1)
+          }
+        } else {
+          if (keyCode === 0xB0) {
           // 下一首
-          this.ap.skipForward()
-          return
-        }
-        if (keyCode === 0xB1) {
+            that.ap.skipForward()
+            return
+          }
+          if (keyCode === 0xB1) {
           // 上一首
-          this.ap.skipBack()
-          return
-        }
-        if (keyCode === 0xB3) {
+            that.ap.skipBack()
+            return
+          }
+          if (keyCode === 0xB3) {
           // 播放/暂停
-          this.ap.toggle()
+            that.ap.toggle()
+          }
         }
       }
     }
