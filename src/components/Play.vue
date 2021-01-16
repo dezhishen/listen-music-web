@@ -84,6 +84,27 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <el-dialog title="导入歌曲" :visible.sync="importSongVisible">
+      <el-form inline size="medium">
+        <el-form-item label="来源">
+          <el-radio-group v-model="importSong.source">
+            <el-radio-button
+              :disabled="!source.enabled"
+              v-for="source in sources"
+              :key="source.id"
+              :label="source.id"
+              >{{ source.label ? source.label : source.id }}</el-radio-button
+            >
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="来源歌单ID">
+          <el-input @keyup.enter.native="handleImportSong"  v-model="importSong.sourcePlayListId"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="handleImportSong" v-loading="importSongLoading" type="primary">导入</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
     <el-container style="height: 100%">
       <el-header>
         <login style="float:right" @success="loginSuccess"></login>
@@ -104,18 +125,23 @@
             <div slot="header" class="clearfix">
               <span>{{ o.name }}</span>
             </div>
-            <el-button type="text" @click="loadPlayListSong(o.id)"
-              >播放当前歌单</el-button
-            >
-            <el-button type="text" @click="handleOpenSearchDialog(o)"
-              >添加歌曲</el-button
-            >
-            <el-button
-              type="text"
-              style="color: #ef2e55"
-              @click="handleDeletePlayList(o.id)"
-              >删除歌单</el-button
-            >
+            <el-form size="small">
+              <el-button type="text" @click="loadPlayListSong(o.id)"
+                >播放当前歌单</el-button
+              >
+              <el-button type="text" @click="handleOpenSearchDialog(o)"
+                >添加歌曲</el-button
+              >
+              <el-button type="text" @click="handleOpenImportSongs(o)">
+                导入歌单
+              </el-button>
+              <el-button
+                type="text"
+                style="color: #ef2e55"
+                @click="handleDeletePlayList(o.id)"
+                >删除歌单</el-button
+              >
+            </el-form>
           </el-card>
         </el-aside>
         <el-main>
@@ -131,6 +157,7 @@ import {
   deletePlayList,
   list,
   listSong,
+  importSongs,
   addSong,
   deleteSong
 } from '@/api/playlist'
@@ -171,12 +198,51 @@ export default {
         pageSize: 10,
         total: 0
       },
-      playList: []
+      playList: [],
+      importSong: {
+        playListId: null,
+        source: null,
+        sourcePlayListId: null
+      },
+      importSongVisible: false,
+      importSongLoading: false
     }
   },
   watch: {
   },
   methods: {
+    handleImportSong: function () {
+      this.importSongLoading = true
+      importSongs(this.importSong).then(res => {
+        if (res.code === 200) {
+          if (res.data) {
+            res.data.forEach(e => {
+              let song = this.song2aplayMusic(e)
+              this.$refs.myAduio.addSong(song)
+              this.$notify({
+                title: '添加成功',
+                message: song.artist + '-' + song.name
+              })
+            })
+          }
+        } else {
+          this.$message.error(res.message)
+        }
+      }).finally(() => {
+        this.importSongLoading = false
+      })
+    },
+    handleOpenImportSongs: function (o) {
+      this.handleQuerySources().then(() => {
+        this.sources.forEach((e) => {
+          if (!this.importSong.source && e.enabled) {
+            this.importSong.source = e.id
+          }
+        })
+      })
+      this.importSong.playListId = o.id
+      this.importSongVisible = true
+    },
     loginSuccess: function () {
       this.loadPlayList()
     },
@@ -191,7 +257,13 @@ export default {
       })
     },
     handleOpenSearchDialog: function (o) {
-      this.handleQuerySources()
+      this.handleQuerySources().then(() => {
+        this.sources.forEach((e) => {
+          if (!this.querySong.source && e.enabled) {
+            this.querySong.source = e.id
+          }
+        })
+      })
       this.querySong.playListId = o.id
       this.showSearchMusic = true
     },
@@ -223,30 +295,21 @@ export default {
       })
     },
     handleAddSong2PlayList: function (source, id) {
-      addSong(source, id, this.querySong.playListId).then((res) => {
+      addSong(source, id, this.querySong.playListId).then(res => {
         if (this.querySong.playListId === this.currentPlayListId) {
-          getSongBySourceAndId(source, id).then((res) => {
-            let song = this.song2aplayMusic(res.data)
-            this.$refs.myAduio.addSong(song)
-            this.$notify({
-              title: '添加成功',
-              message: song.artist + '-' + song.name
-            })
+          let song = this.song2aplayMusic(res.data)
+          this.$refs.myAduio.addSong(song)
+          this.$notify({
+            title: '添加成功',
+            message: song.artist + '-' + song.name
           })
         }
       })
     },
     handleQuerySources: function () {
-      listSource()
+      return listSource()
         .then((res) => {
           this.sources = res.data
-        })
-        .then(() => {
-          this.sources.forEach((e) => {
-            if (!this.querySong.source && e.enabled) {
-              this.querySong.source = e.id
-            }
-          })
         })
     },
 

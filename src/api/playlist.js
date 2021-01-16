@@ -31,3 +31,7 @@ export function addSong (source, id, playListId) {
 export function deleteSong (playListId, source, songId) {
   return axios.delete('/play-list/song/remove', {params: {playListId, source, songId}})
 }
+
+export function importSongs ({playListId, source, sourcePlayListId}) {
+  return axios.post(`/play-list/song/import?playListId=${playListId}&source=${source}&sourcePlayListId=${sourcePlayListId}`)
+}
