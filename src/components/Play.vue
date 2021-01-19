@@ -1,10 +1,10 @@
 <template>
   <div>
-    <el-dialog style="padding:5px;" width="100%" :visible.sync="showSearchMusic">
+    <el-dialog @opened="()=>{$refs.searchSongInput.focus()}" style="padding:10px;max-width: 500px; overflow:hidden" width="100%" :visible.sync="showSearchMusic">
       <div>
         <el-form inline size="mini">
           <el-form-item label="关键字">
-            <el-input v-model="querySong.q" @keyup.enter.native="handleQuerySong" clearable></el-input>
+            <el-input ref="searchSongInput" v-model="querySong.q" @keyup.enter.native="handleQuerySong" clearable></el-input>
           </el-form-item>
           <el-form-item label="来源">
             <el-radio-group v-model="querySong.source">
@@ -56,7 +56,7 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-dialog title="导入歌曲" :visible.sync="importSongVisible">
+    <el-dialog title="导入歌曲" @opened="()=>{$refs.importSourcePlaylistIdInput.focus()}" :visible.sync="importSongVisible">
       <el-form inline size="mini">
         <el-form-item label="来源">
           <el-radio-group v-model="importSong.source">
@@ -70,7 +70,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="来源歌单ID">
-          <el-input @keyup.enter.native="handleImportSong"  v-model="importSong.sourcePlayListId"></el-input>
+          <el-input ref="importSourcePlaylistIdInput" @keyup.enter.native="handleImportSong"  v-model="importSong.sourcePlayListId"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button @click="handleImportSong" v-loading="importSongLoading" type="primary">导入</el-button>
@@ -78,45 +78,9 @@
       </el-form>
     </el-dialog>
     <el-row>
-      <el-card class="box-card">
-        <div slot="header" class="clearfix">
-           <el-button size="mini" type="text" @click="handleOpenEditPlayListDialog"
-              >新增歌单</el-button
-            >
-          <login style="float:right" @success="loginSuccess"></login>
-        </div>
-        <div :key="o.id"
-          v-for="(o,index) in playList">
-          <el-divider direction="vertical" v-if="index!==0"></el-divider>
-          <div
-            style="margin: 5px"
-          >
-            <el-row>
-              <span>{{o.name}}</span>
-            </el-row>
-            <el-row>
-              <el-button size="mini" type="text" @click="loadPlayListSong(o.id)"
-                >播放当前歌单</el-button
-              >
-              <el-button size="mini" type="text" @click="handleOpenSearchDialog(o)"
-                >添加歌曲</el-button
-              >
-              <el-button size="mini" type="text" @click="handleOpenImportSongs(o)">
-                导入歌单
-              </el-button>
-              <el-button
-                type="text"
-                size="mini"
-                style="color: #ef2e55"
-                @click="handleDeletePlayList(o.id)"
-                >删除歌单</el-button
-              >
-            </el-row>
-          </div>
-        </div>
-      </el-card>
+      <span style="float:left;padding-left: 10px;">欢迎使用</span><login style="float:right;padding-right: 10px;" @success="loginSuccess"></login>
     </el-row>
-    <my-audio ref="myAduio"></my-audio>
+    <my-audio @importSong="handleOpenImportSongs(playList[0])" @addSong="handleOpenSearchDialog(playList[0])" ref="myAduio"></my-audio>
   </div>
 </template>
 <script>

@@ -86,6 +86,38 @@ export default {
           }
         }
       })
+      this.initButtons()
+    },
+    initButtons: function () {
+      const that = this
+      const targetNode = document.getElementById('audio')
+      if (!targetNode) {
+        return
+      }
+      let controlles = targetNode.getElementsByClassName('aplayer-time')
+      if (!controlles) {
+        return
+      }
+      let addBtn = document.createElement('button')
+      addBtn.setAttribute('class', 'aplayer-icon aplayer-icon-loop')
+      addBtn.setAttribute('type', 'button')
+      let addIcon = document.createElement('i')
+      addIcon.setAttribute('class', 'el-icon-zoom-in')
+      addBtn.appendChild(addIcon)
+      addBtn.onclick = function () {
+        that.$emit('addSong')
+      }
+      controlles[0].appendChild(addBtn)
+      let importButton = document.createElement('button')
+      importButton.setAttribute('class', 'aplayer-icon aplayer-icon-loop')
+      importButton.setAttribute('type', 'button')
+      let importIcon = document.createElement('i')
+      importIcon.setAttribute('class', 'el-icon-upload')
+      importButton.appendChild(importIcon)
+      importButton.onclick = function () {
+        that.$emit('importSong')
+      }
+      controlles[0].appendChild(importButton)
     },
     removeSong: function (e) {
       let index = e.parentNode.parentNode.childNodes[3].innerHTML
